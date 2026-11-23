@@ -2,6 +2,9 @@
 
 A report plugin for Securo 0.21.0 or newer. It detects possible recurring expenses and shows estimated monthly costs, annualized costs, the largest monthly equivalent, payment details, a category breakdown and a six-month estimated-cost trend. The annualized figure is 12 times the current monthly estimate, not a forecast of exact future payments. When enough history is available, the monthly estimate also shows its change from the previous month.
 
+> [!WARNING]
+> This plugin was developed with AI assistance. Its detection is heuristic and can miss payments or identify ordinary purchases as recurring costs. Review the results before relying on them for financial decisions.
+
 ## Using the report
 
 The workspace owner can install the plugin from a compatible plugin catalog. Enable Securo's plugin runner (`plugins` profile), then add **Fixed costs and subscriptions** from the reports library. The plugin requests read access to transactions and categories. It has no external dependencies and declares no network access.
