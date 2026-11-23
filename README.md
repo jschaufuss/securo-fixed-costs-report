@@ -5,6 +5,16 @@ A report plugin for Securo 0.21.0 or newer. It detects possible recurring expens
 > [!WARNING]
 > This plugin was developed with AI assistance. Its detection is heuristic and can miss payments or identify ordinary purchases as recurring costs. Review the results before relying on them for financial decisions.
 
+## Screenshots
+
+The report overview shows estimated costs and possible recurring payments:
+
+![Report overview and recurring payments](docs/screenshots/report-overview.png)
+
+The category breakdown and trend show how estimated costs are distributed and change over time:
+
+![Category breakdown and estimated monthly cost trend](docs/screenshots/category-and-trend.png)
+
 ## Using the report
 
 The workspace owner can install the plugin from a compatible plugin catalog. Enable Securo's plugin runner (`plugins` profile), then add **Fixed costs and subscriptions** from the reports library. The plugin requests read access to transactions and categories. It has no external dependencies and declares no network access.
