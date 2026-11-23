@@ -31,7 +31,7 @@ Ignored transactions and categories, categories marked as transfers, split-categ
 
 ## Installation and publication
 
-The plugin is published at [jschaufuss/securo-report-plugins](https://github.com/jschaufuss/securo-report-plugins). Securo discovers public repositories with the `securo-plugin` topic and a published release; its catalog is rebuilt every six hours. Once indexed, find it under **Plugins** in Securo and install it as the workspace owner. See the [Securo plugin documentation](https://docs.usesecuro.com/docs/features/plugins) for the runner setup and installation details.
+The plugin is published at [jschaufuss/securo-fixed-costs-report](https://github.com/jschaufuss/securo-fixed-costs-report). Securo discovers public repositories with the `securo-plugin` topic and a published release; its catalog is rebuilt every six hours. Once indexed, find it under **Plugins** in Securo and install it as the workspace owner. See the [Securo plugin documentation](https://docs.usesecuro.com/docs/features/plugins) for the runner setup and installation details.
 
 ## Tests
 
@@ -44,7 +44,7 @@ python3 -m unittest discover -s tests -v
 The integration test uses the real Securo 0.21.0 runner and its test fixtures. After installing development dependencies in a Securo checkout, run from its `backend` directory:
 
 ```sh
-export FIXED_COSTS_PLUGIN_DIR=/absolute/path/to/securo-report-plugins
+export FIXED_COSTS_PLUGIN_DIR=/absolute/path/to/securo-fixed-costs-report
 cp "$FIXED_COSTS_PLUGIN_DIR/tests/securo_integration/test_fixed_costs_integration.py" tests/test_local_fixed_costs.py
 .venv/bin/python -m pytest tests/test_local_fixed_costs.py -q --no-cov
 rm tests/test_local_fixed_costs.py
