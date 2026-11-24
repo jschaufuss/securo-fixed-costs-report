@@ -17,6 +17,44 @@ def report(rows, **kwargs):
 
 
 class ReportTest(unittest.TestCase):
+    def test_widget_shows_summary_and_all_payments_with_truncation_warning(self):
+        rows = [tx(f"2025-{month:02d}-01", str(cost), f"Service {cost}")
+                for cost in range(1, 8) for month in (1, 2, 3)]
+        params = {"widget": "recurring-payments", "start_date": "2024-04-01", "end_date": "2025-03-31",
+                  "today": "2025-03-31", "currency": "EUR",
+                  "data": {"transactions": {"rows": rows, "truncated": True}, "categories": []}}
+        blocks = plugin.widget(params, None)["blocks"]
+        self.assertEqual(blocks[0]["value"], 28)
+        self.assertEqual(blocks[1]["value"], 336)
+        self.assertEqual(blocks[2]["value"], 7)
+        self.assertEqual([b["width"] for b in blocks[:3]], ["third"] * 3)
+        self.assertTrue(any(b.get("type") == "text" and "truncated" in b["text"] for b in blocks))
+        table = next(b for b in blocks if b["type"] == "table")
+        self.assertEqual([r["monthly"] for r in table["rows"]], [7, 6, 5, 4, 3, 2, 1])
+        self.assertEqual(table["page_size"], 10)
+        self.assertEqual([c["key"] for c in table["columns"]], ["payee", "monthly"])
+        params["widget"] = "monthly-fixed-costs"
+        self.assertEqual(plugin.widget(params, None)["blocks"][0]["value"], 28)
+        params["widget"] = "annual-fixed-costs"
+        self.assertEqual(plugin.widget(params, None)["blocks"][0]["value"], 336)
+        params["widget"] = "recurring-payments-compact"
+        compact = next(b for b in plugin.widget(params, None)["blocks"] if b["type"] == "table")
+        self.assertEqual(compact["page_size"], 5)
+        self.assertNotIn("title", compact)
+        self.assertEqual(len(compact["rows"]), 7)
+
+    def test_widget_empty_and_historical_month(self):
+        params = {"widget": "recurring-payments", "start_date": "2024-04-01", "end_date": "2025-03-31",
+                  "today": "2025-06-01", "currency": "EUR", "data": {"transactions": {"rows": [
+                      tx("2025-02-01"), tx("2025-03-01"), tx("2025-04-01", "100")], "truncated": False}, "categories": []}}
+        table = next(b for b in plugin.widget(params, None)["blocks"] if b["type"] == "table")
+        self.assertEqual(table["rows"][0]["monthly"], 10)
+        params["data"]["transactions"]["rows"] = []
+        self.assertTrue(any(b["type"] == "text" for b in plugin.widget(params, None)["blocks"]))
+        params["widget"] = "unknown"
+        with self.assertRaises(ValueError):
+            plugin.widget(params, None)
+
     def test_recognizes_monthly_and_yearly_and_uses_latest_amount(self):
         rows = [tx("2025-01-01"), tx("2025-02-01"), tx("2025-03-01", "11"),
                 tx("2024-04-01", "120", "Insurance"), tx("2025-04-01", "120", "Insurance")]

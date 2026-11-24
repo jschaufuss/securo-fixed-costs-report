@@ -49,3 +49,16 @@ async def test_fixed_costs_through_securo(client, auth_headers, code_catalog, pl
     assert view['blocks'][2]['value'] == 120.0
     assert view['blocks'][3]['hint'] == 'Streaming'
     assert view['blocks'][0]['delta'] == 0.0
+    for key in ('recurring-payments', 'monthly-fixed-costs', 'annual-fixed-costs', 'recurring-payments-compact'):
+        resp = await client.get(f'/api/dashboard/plugins/{cp.PLUGIN}/{key}', params={'start_date': '2024-04-01', 'end_date': '2025-03-31'}, headers=auth_headers)
+        assert resp.status_code == 200, resp.text
+        widget = resp.json()['view']
+        parse_view(widget)
+        if key == 'recurring-payments':
+            assert [b['value'] for b in widget['blocks'][:3]] == [10.0, 120.0, 1]
+        elif key == 'monthly-fixed-costs':
+            assert widget['blocks'][0]['value'] == 10.0
+        elif key == 'annual-fixed-costs':
+            assert widget['blocks'][0]['value'] == 120.0
+        if key in ('recurring-payments', 'recurring-payments-compact'):
+            assert next(b for b in widget['blocks'] if b['type'] == 'table')['rows'][0]['payee'] == 'Streaming'

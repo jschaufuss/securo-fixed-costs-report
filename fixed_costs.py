@@ -147,6 +147,31 @@ def detect(rows, categories, currency, as_of):
 
 
 class Plugin:
+    def widget(self, params, context):
+        key = params.get("widget")
+        if key not in ("recurring-payments", "monthly-fixed-costs", "annual-fixed-costs", "recurring-payments-compact"):
+            raise ValueError("Unknown widget")
+        blocks = self.report(params, context)["blocks"]
+        notices = [block for block in blocks if block.get("type") == "text"
+                   and block.get("text") in (TEXT["truncated"], TEXT["series_limit"])]
+        if key in ("monthly-fixed-costs", "annual-fixed-costs"):
+            value = blocks[0 if key == "monthly-fixed-costs" else 2]
+            return {"blocks": [{**value, "width": "full"}, *notices]}
+        summary = [{**blocks[0], "width": "third"}, {**blocks[2], "width": "third"},
+                   {**blocks[1], "width": "third"}]
+        if key == "recurring-payments-compact":
+            summary = []
+        table = next((block for block in blocks if block.get("title") == TEXT["table"]), None)
+        if table is None:
+            return {"blocks": [*summary, *notices, {"type": "text", "text": TEXT["empty"]}]}
+        compact = {**table, "columns": [column for column in table["columns"]
+                                         if column["key"] in ("payee", "monthly")],
+                   "rows": [{"payee": row["payee"], "monthly": row["monthly"]}
+                            for row in table["rows"]], "page_size": 5 if key == "recurring-payments-compact" else 10}
+        if key == "recurring-payments-compact":
+            compact.pop("title", None)
+        return {"blocks": [*summary, *notices, compact]}
+
     def report(self, params, context):
         t = TEXT
         data = params["data"]
