@@ -2,7 +2,7 @@
   "id": "jschaufuss/securo-fixed-costs-report",
   "name": "Fixed Costs and Subscriptions",
   "description": "Finds potentially recurring expenses and shows their monthly cost.",
-  "version": "1.2.0",
+  "version": "1.1.0",
   "repository": "https://github.com/jschaufuss/securo-fixed-costs-report",
   "license": "MIT",
   "min_securo_version": "0.22.0",
